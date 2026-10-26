@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catedral Ortodoxa - Transmisión Sacra en Vivo</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts for Orthodox/Byzantine Aesthetic -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@600;700;900&family=Cinzel:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <!-- Font Awesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        orthodox: {
+                            bg: '#0B0E14',
+                            card: '#121722',
+                            cardHover: '#182030',
+                            gold: '#D4AF37',
+                            goldLight: '#F3E5AB',
+                            goldDark: '#997A15',
+                            accent: '#B8860B',
+                            red: '#8B0000',
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        cinzelDeco: ['"Cinzel Decorative"', 'serif'],
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'gold-glow': '0 0 25px -5px rgba(212, 175, 55, 0.3)',
+                        'gold-border': '0 0 0 1px rgba(212, 175, 55, 0.4)',
+                        'gold-inner': 'inset 0 0 15px rgba(212, 175, 55, 0.15)'
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom Stars / Point Background Pattern */
+        .bg-orthodox-stars {
+            background-color: #0B0E14;
+            background-image: radial-gradient(rgba(212, 175, 55, 0.22) 1px, transparent 1px), radial-gradient(rgba(255, 255, 255, 0.08) 1px, #0B0E14 1px);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+        }
+
+        /* Gold Gradient Text Utility */
+        .gold-gradient-text {
+            background: linear-gradient(135deg, #FFF1B0 0%, #D4AF37 50%, #AA7C11 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Gold Border Gradient Card */
+        .gold-card-border {
+            border: 1px solid transparent;
+            background-image: linear-gradient(#121722, #121722), linear-gradient(135deg, rgba(212, 175, 55, 0.6) 0%, rgba(80, 60, 15, 0.3) 50%, rgba(212, 175, 55, 0.5) 100%);
+            background-origin: border-box;
+            background-clip: padding-box, border-box;
+        }
+
+        /* Subtle Pulse for Live Badge */
+        @keyframes pulse-gold {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(1.15); }
+        }
+        .animate-pulse-live {
+            animation: pulse-gold 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        /* Smooth Iframe Aspect Ratio Container */
+        .responsive-iframe-container {
+            position: relative;
+            overflow: hidden;
+            width: 100%;
+            padding-top: 56.25%; /* 16:9 Aspect Ratio */
+        }
+        .responsive-iframe-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: 0;
+        }
+    </style>
+</head>
+<body class="bg-orthodox-stars text-gray-200 font-sans min-h-screen flex flex-col justify-between selection:bg-orthodox-gold selection:text-black">
+
+    <!-- TOP HEADER -->
+    <header class="sticky top-0 z-50 bg-orthodox-bg/90 backdrop-blur-md border-b border-orthodox-gold/30 px-4 py-3 sm:px-8">
+        <div class="max-w-7xl mx-auto flex items-center justify-between">
+            
+            <!-- Logo & Title -->
+            <div class="flex items-center gap-3 sm:gap-4">
+                <!-- Orthodox Cross Symbol Container -->
+                <div class="w-11 h-11 sm:w-13 sm:h-13 rounded-full bg-gradient-to-br from-amber-700 via-orthodox-gold to-amber-900 p-[1.5px] shadow-gold-glow flex-shrink-0">
+                    <div class="w-full h-full bg-orthodox-bg rounded-full flex items-center justify-center">
+                        <span class="text-orthodox-gold text-2xl font-bold font-cinzel select-none">☦</span>
+                    </div>
+                </div>
+                <div>
+                    <h1 class="font-cinzel text-sm sm:text-lg md:text-xl font-bold gold-gradient-text tracking-wide uppercase leading-tight">
+                        Catedral Ortodoxa
+                    </h1>
+                    <p class="text-xs sm:text-sm text-amber-200/70 font-cinzel tracking-wider">
+                        De la Santa Trinidad y San Nicolás
+                    </p>
+                </div>
+            </div>
+
+            <!-- Header Actions / Settings -->
+            <div class="flex items-center gap-2">
+                <button id="infoBtn" onclick="toggleModal()" class="p-2.5 rounded-xl border border-orthodox-gold/40 bg-orthodox-card/80 hover:bg-orthodox-gold/20 text-orthodox-gold transition-all duration-300 shadow-md hover:shadow-gold-glow" title="Información y Horarios">
+                    <i class="fa-solid fa-gear text-lg"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 flex-grow w-full">
+
+        <!-- TITLE & LIVE BADGE SECTION -->
+        <div class="text-center mb-8">
+            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-red-950/60 border border-red-500/40 text-red-300 text-xs font-semibold uppercase tracking-widest mb-3">
+                <span class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse-live"></span>
+                <span>Transmisión Sacra • En Directo</span>
+            </div>
+            
+            <h2 class="font-cinzel text-2xl sm:text-4xl lg:text-5xl font-bold text-amber-100 tracking-wider mb-2">
+                ESPACIOS DE ORACIÓN EN VIVO
+            </h2>
+            <p class="text-amber-200/60 text-xs sm:text-sm max-w-2xl mx-auto font-sans font-light">
+                Uniendo a la comunidad ortodoxa en la fe. Acompaña nuestras liturgias, vísperas y catequesis desde cualquier lugar.
+            </p>
+        </div>
+
+        <!-- VIEW SWITCHER / TOGGLES -->
+        <div class="max-w-2xl mx-auto mb-8 bg-orthodox-card/90 p-1.5 sm:p-2 rounded-2xl border border-orthodox-gold/30 shadow-2xl">
+            <div class="grid grid-cols-3 gap-1 sm:gap-2">
+                
+                <!-- Split View Button -->
+                <button id="btn-split" onclick="switchView('split')" class="view-btn active-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 bg-gradient-to-r from-orthodox-gold to-amber-600 text-black shadow-gold-glow">
+                    <i class="fa-solid fa-table-columns text-sm"></i>
+                    <span class="text-center">Pantalla Dividida</span>
+                </button>
+
+                <!-- Channel 1 Button -->
+                <button id="btn-chan1" onclick="switchView('chan1')" class="view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 text-amber-200/80 hover:text-orthodox-gold hover:bg-orthodox-gold/10">
+                    <i class="fa-solid fa-church text-sm"></i>
+                    <span class="text-center">Canal 1 (Catedral)</span>
+                </button>
+
+                <!-- Channel 2 Button -->
+                <button id="btn-chan2" onclick="switchView('chan2')" class="view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 text-amber-200/80 hover:text-orthodox-gold hover:bg-orthodox-gold/10">
+                    <i class="fa-solid fa-cross text-sm"></i>
+                    <span class="text-center">Canal 2 (Capilla)</span>
+                </button>
+
+            </div>
+        </div>
+
+        <!-- VIDEO STREAMS GRID CONTAINER -->
+        <div id="streams-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500">
+            
+            <!-- CONTAINER 1: NAVE PRINCIPAL - CATEDRAL -->
+            <div id="card-chan1" class="gold-card-border rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-gold-glow flex flex-col">
+                <!-- Card Header -->
+                <div class="p-4 sm:p-5 bg-gradient-to-r from-orthodox-card via-amber-950/20 to-orthodox-card border-b border-orthodox-gold/20 flex items-start justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-red-800 text-white font-bold font-cinzel px-2.5 py-1 rounded-lg text-xs tracking-wider shadow-inner flex-shrink-0 mt-0.5">
+                            CANAL 1
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-lg sm:text-xl font-bold text-amber-100 leading-tight">
+                                NAVE PRINCIPAL - CATEDRAL
+                            </h3>
+                            <p class="text-xs text-amber-200/60 font-sans mt-0.5">
+                                Divina Liturgia, Vísperas y Grandes Fiestas
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="reloadStream('iframe-1')" class="text-amber-200/60 hover:text-orthodox-gold transition-colors p-1" title="Recargar Reproductor">
+                        <i class="fa-solid fa-arrows-rotate text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Video Frame -->
+                <div class="responsive-iframe-container bg-black/80 flex-grow">
+                    <iframe id="iframe-1" src="https://rtsp.ru/embed/zzrHDs6B/" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                </div>
+
+                <!-- Card Footer / Controls -->
+                <div class="p-3 sm:p-4 bg-orthodox-card/90 border-t border-orthodox-gold/20 flex items-center justify-between text-xs sm:text-sm">
+                    <div class="flex items-center gap-2 text-amber-200/80">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-medium">Audio HD • Presidencia Arzobispal</span>
+                    </div>
+                    <button onclick="reloadStream('iframe-1')" class="font-cinzel text-orthodox-gold hover:text-amber-200 underline font-semibold transition-colors flex items-center gap-1.5">
+                        <span>Reconectar</span>
+                        <i class="fa-solid fa-plug text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- CONTAINER 2: CAPILLA DE SAN NICOLÁS -->
+            <div id="card-chan2" class="gold-card-border rounded-2xl overflow-hidden shadow-2xl transition-all duration-300 hover:shadow-gold-glow flex flex-col">
+                <!-- Card Header -->
+                <div class="p-4 sm:p-5 bg-gradient-to-r from-orthodox-card via-amber-950/20 to-orthodox-card border-b border-orthodox-gold/20 flex items-start justify-between gap-3">
+                    <div class="flex items-start gap-3">
+                        <div class="bg-amber-700 text-white font-bold font-cinzel px-2.5 py-1 rounded-lg text-xs tracking-wider shadow-inner flex-shrink-0 mt-0.5">
+                            CANAL 2
+                        </div>
+                        <div>
+                            <h3 class="font-cinzel text-lg sm:text-xl font-bold text-amber-100 leading-tight">
+                                CAPILLA DE SAN NICOLÁS
+                            </h3>
+                            <p class="text-xs text-amber-200/60 font-sans mt-0.5">
+                                Catequesis, Estudios Bíblicos y Charlas Teológicas
+                            </p>
+                        </div>
+                    </div>
+                    <button onclick="reloadStream('iframe-2')" class="text-amber-200/60 hover:text-orthodox-gold transition-colors p-1" title="Recargar Reproductor">
+                        <i class="fa-solid fa-arrows-rotate text-sm"></i>
+                    </button>
+                </div>
+
+                <!-- Video Frame -->
+                <div class="responsive-iframe-container bg-black/80 flex-grow">
+                    <iframe id="iframe-2" src="https://rtsp.ru/embed/83SF9eHe/" allowfullscreen allow="autoplay; encrypted-media"></iframe>
+                </div>
+
+                <!-- Card Footer / Controls -->
+                <div class="p-3 sm:p-4 bg-orthodox-card/90 border-t border-orthodox-gold/20 flex items-center justify-between text-xs sm:text-sm">
+                    <div class="flex items-center gap-2 text-amber-200/80">
+                        <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span class="font-medium">Audio HD • Aula de Formación</span>
+                    </div>
+                    <button onclick="reloadStream('iframe-2')" class="font-cinzel text-orthodox-gold hover:text-amber-200 underline font-semibold transition-colors flex items-center gap-1.5">
+                        <span>Reconectar</span>
+                        <i class="fa-solid fa-plug text-xs"></i>
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- FOOTER WITH SOCIAL & LINK ICONS -->
+    <footer class="mt-12 bg-orthodox-card/90 border-t border-orthodox-gold/30 pt-10 pb-6 px-4 sm:px-8">
+        <div class="max-w-7xl mx-auto flex flex-col items-center text-center">
+            
+            <!-- Cross Emblem -->
+            <div class="text-orthodox-gold text-3xl font-cinzel mb-3">
+                ☦
+            </div>
+
+            <!-- Sacred Text -->
+            <h3 class="font-cinzel text-lg sm:text-xl font-bold gold-gradient-text tracking-widest uppercase mb-1">
+                CATEDRAL ORTODOXA DE LA SANTA TRINIDAD
+            </h3>
+            <p class="text-xs sm:text-sm text-amber-200/80 font-cinzel tracking-wider mb-2">
+                Transmisión Sacra Autorizada • Arquidiócesis Ortodoxa
+            </p>
+            <p class="text-xs text-amber-200/50 italic font-serif mb-6">
+                "Paz y bendiciones a todos los oyentes"
+            </p>
+
+            <!-- Social and Useful Links Icons Grid -->
+            <div class="flex flex-wrap justify-center gap-3 sm:gap-4 mb-8">
+                <!-- YouTube -->
+                <a href="https://youtube.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Canal de YouTube">
+                    <i class="fa-brands fa-youtube text-lg"></i>
+                </a>
+                <!-- Facebook -->
+                <a href="https://www.facebook.com/share/1DQq5dXZSc/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Página de Facebook">
+                    <i class="fa-brands fa-facebook-f text-lg"></i>
+                </a>
+                <!-- Telegram -->
+                <a href="https://t.me/IconoDeBelen" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Canal de Telegram">
+                    <i class="fa-brands fa-telegram text-lg"></i>
+                </a>
+                <!-- Donation / Candle Icon -->
+                <a href="#donations" onclick="showNotification('Ofrendas y Velas Virtuales: Módulo en mantenimiento')" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Encender una Vela / Ofrendas">
+                    <i class="fa-solid fa-fire-flame-curved text-lg"></i>
+                </a>
+                <!-- Location / Map -->
+                <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Ubicación de la Catedral">
+                    <i class="fa-solid fa-location-dot text-lg"></i>
+                </a>
+                <!-- Official Website -->
+                <a href="https://www.facebook.com/share/1DQq5dXZSc/" target="_blank" rel="noopener noreferrer" class="w-10 h-10 rounded-xl bg-orthodox-bg border border-orthodox-gold/30 hover:border-orthodox-gold text-amber-200 hover:text-orthodox-gold flex items-center justify-center transition-all duration-300 hover:shadow-gold-glow hover:-translate-y-1" title="Sitio Web Oficial">
+                    <i class="fa-solid fa-globe text-lg"></i>
+                </a>
+            </div>
+
+            <!-- Divider Line -->
+            <div class="w-24 h-[1px] bg-gradient-to-r from-transparent via-orthodox-gold/40 to-transparent mb-4"></div>
+
+            <!-- Copyright -->
+            <p class="text-xs text-amber-200/40 font-sans tracking-wide">
+                © 2026 Catedral Ortodoxa de la Santa Trinidad y San Nicolás. Todos los derechos reservados.
+            </p>
+        </div>
+    </footer>
+
+    <!-- MODAL FOR INFORMATION / SETTINGS -->
+    <div id="infoModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 hidden flex items-center justify-center p-4">
+        <div class="gold-card-border bg-orthodox-bg rounded-2xl max-w-md w-full p-6 relative shadow-2xl">
+            <button onclick="toggleModal()" class="absolute top-4 right-4 text-amber-200/60 hover:text-orthodox-gold text-xl">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+            <div class="text-center mb-4">
+                <span class="text-orthodox-gold text-3xl">☦</span>
+                <h3 class="font-cinzel text-xl font-bold text-amber-100 mt-2">Información Litúrgica</h3>
+            </div>
+            <div class="space-y-3 text-sm text-amber-200/80 font-sans">
+                <div class="bg-orthodox-card p-3 rounded-xl border border-orthodox-gold/20">
+                    <p class="font-semibold text-orthodox-gold font-cinzel">Domingos y Grandes Fiestas</p>
+                    <p class="text-xs text-amber-200/70 mt-1">Divina Liturgia: 10:00 AM</p>
+                </div>
+                <div class="bg-orthodox-card p-3 rounded-xl border border-orthodox-gold/20">
+                    <p class="font-semibold text-orthodox-gold font-cinzel">Sábados</p>
+                    <p class="text-xs text-amber-200/70 mt-1">Grandes Vísperas: 06:00 PM</p>
+                </div>
+                <div class="bg-orthodox-card p-3 rounded-xl border border-orthodox-gold/20">
+                    <p class="font-semibold text-orthodox-gold font-cinzel">Charlas Teológicas</p>
+                    <p class="text-xs text-amber-200/70 mt-1">Miércoles y Viernes: 07:00 PM (Capilla)</p>
+                </div>
+            </div>
+            <button onclick="toggleModal()" class="w-full mt-5 py-2.5 rounded-xl bg-gradient-to-r from-orthodox-gold to-amber-600 text-black font-cinzel font-bold text-sm shadow-gold-glow">
+                Entendido
+            </button>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION TOAST CONTAINER -->
+    <div id="toast" class="fixed bottom-5 right-5 z-50 bg-orthodox-card border border-orthodox-gold/50 text-amber-100 px-4 py-3 rounded-xl shadow-2xl opacity-0 pointer-events-none transition-all duration-300 transform translate-y-2 flex items-center gap-3">
+        <i class="fa-solid fa-circle-info text-orthodox-gold"></i>
+        <span id="toast-message" class="text-xs font-sans"></span>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // View Switcher Logic
+        function switchView(mode) {
+            const grid = document.getElementById('streams-grid');
+            const card1 = document.getElementById('card-chan1');
+            const card2 = document.getElementById('card-chan2');
+            
+            const btnSplit = document.getElementById('btn-split');
+            const btn1 = document.getElementById('btn-chan1');
+            const btn2 = document.getElementById('btn-chan2');
+
+            const allBtns = [btnSplit, btn1, btn2];
+            const activeClass = "bg-gradient-to-r from-orthodox-gold to-amber-600 text-black shadow-gold-glow";
+            const inactiveClass = "text-amber-200/80 hover:text-orthodox-gold hover:bg-orthodox-gold/10";
+
+            // Reset buttons style
+            allBtns.forEach(btn => {
+                btn.className = "view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 " + inactiveClass;
+            });
+
+            if (mode === 'split') {
+                btnSplit.className = "view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 " + activeClass;
+                grid.className = "grid grid-cols-1 lg:grid-cols-2 gap-6 transition-all duration-500";
+                card1.classList.remove('hidden');
+                card2.classList.remove('hidden');
+            } else if (mode === 'chan1') {
+                btn1.className = "view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 " + activeClass;
+                grid.className = "grid grid-cols-1 gap-6 max-w-4xl mx-auto transition-all duration-500";
+                card1.classList.remove('hidden');
+                card2.classList.add('hidden');
+            } else if (mode === 'chan2') {
+                btn2.className = "view-btn flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 py-2.5 px-2 rounded-xl text-xs sm:text-sm font-semibold font-cinzel transition-all duration-300 " + activeClass;
+                grid.className = "grid grid-cols-1 gap-6 max-w-4xl mx-auto transition-all duration-500";
+                card1.classList.add('hidden');
+                card2.classList.remove('hidden');
+            }
+        }
+
+        // Reload Iframe Stream Logic
+        function reloadStream(iframeId) {
+            const iframe = document.getElementById(iframeId);
+            if (iframe) {
+                const currentSrc = iframe.src;
+                iframe.src = '';
+                setTimeout(() => {
+                    iframe.src = currentSrc;
+                    showNotification('Reconectando señal en vivo...');
+                }, 100);
+            }
+        }
+
+        // Modal Toggle
+        function toggleModal() {
+            const modal = document.getElementById('infoModal');
+            modal.classList.toggle('hidden');
+        }
+
+        // Notification Toast Helper
+        function showNotification(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-message');
+            toastMsg.textContent = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-2');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
