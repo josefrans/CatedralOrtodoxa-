@@ -6,6 +6,12 @@
     <title>Catedral Ortodoxa - Transmisión Sacra en Vivo</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- SDKs de Firebase (compatibilidad Web) -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+    
     <!-- Google Fonts for Orthodox/Byzantine Aesthetic -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -91,6 +97,12 @@
             height: 100%;
             border: 0;
         }
+
+
+        @keyframes pulse {
+  0% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.1); }
+  100% { opacity: 1; transform: scale(1); }
     </style>
 </head>
 <body class="bg-orthodox-stars text-gray-200 font-sans min-h-screen flex flex-col justify-between selection:bg-orthodox-gold selection:text-black">
@@ -450,6 +462,49 @@
                 toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-2');
             }, 3000);
         }
+
+
+
+
+          // 1. Configuración de tu proyecto en Firebase
+  const firebaseConfig = {
+    apiKey: "TU_API_KEY",
+    authDomain: "TU_PROYECTO.firebaseapp.com",
+    databaseURL: "https://TU_PROYECTO-default-rtdb.firebaseio.com",
+    projectId: "TU_PROYECTO",
+    storageBucket: "TU_PROYECTO.appspot.com",
+    messagingSenderId: "TU_SENDER_ID",
+    appId: "TU_APP_ID"
+  };
+
+  // 2. Inicializar Firebase
+  firebase.initializeApp(firebaseConfig);
+  const db = firebase.database();
+
+  // 3. Crear una referencia para la presencia del usuario
+  const myConnectionsRef = db.ref('online_users').push();
+  const connectedRef = db.ref('.info/connected');
+
+  // Detectar conexión y desconexión automática
+  connectedRef.on('value', (snap) => {
+    if (snap.val() === true) {
+      // Cuando el usuario entra o reconecta, añadir su token
+      myConnectionsRef.set(true);
+      // Al cerrar la pestaña o desconectarse, eliminar su token automáticamente
+      myConnectionsRef.onDisconnect().remove();
+    }
+  });
+
+  // 4. Escuchar el número total de personas conectadas en tiempo real
+  const userCountRef = db.ref('online_users');
+  userCountRef.on('value', (snap) => {
+    const count = snap.numChildren();
+    const countElement = document.getElementById('online-count');
+    countElement.innerText = `${count} ${count === 1 ? 'persona viendo' : 'personas viendo'}`;
+  });
+
+
+        
     </script>
 </body>
 </html>
